@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	ErrDecodeBodyFailed   = NewHTTPErrorStatusCode(errors.New("decode body failed"), http.StatusBadRequest)
-	ErrDecodeQueryFailed  = NewHTTPErrorStatusCode(errors.New("decode query failed"), http.StatusBadRequest)
-	ErrInvalidOffsetLimit = NewHTTPErrorStatusCode(errors.New("invalid offset,limit or page,page_size"), http.StatusBadRequest)
-	ErrDataEmpty          = NewHTTPErrorStatusCode(errors.New("data is empty"), http.StatusBadRequest)
+	ErrDecodeBodyFailed   = NewHTTPErrorMsg("decode body failed", http.StatusBadRequest)
+	ErrDecodeQueryFailed  = NewHTTPErrorMsg("decode query failed", http.StatusBadRequest)
+	ErrInvalidOffsetLimit = NewHTTPErrorMsg("invalid offset,limit or page,page_size", http.StatusBadRequest)
+	ErrDataEmpty          = NewHTTPErrorMsg("data is empty", http.StatusBadRequest)
+	ErrDataNotFound       = NewHTTPErrorMsg("data not found", http.StatusNotFound)
 )
 
 type (
@@ -77,4 +78,8 @@ func NewHTTPErrorStatusCode(err error, status int) *HTTPError {
 
 func NewHTTPError200(err error) *HTTPError {
 	return NewHTTPErrorStatusCode(err, http.StatusOK)
+}
+
+func NewHTTPErrorMsg(msg string, status int) *HTTPError {
+	return NewHTTPErrorStatusCode(errors.New(msg), status)
 }
