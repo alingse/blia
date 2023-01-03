@@ -12,6 +12,7 @@ var (
 	ErrInvalidOffsetLimit = NewHTTPErrorMsg("invalid offset,limit or page,page_size", http.StatusBadRequest)
 	ErrDataEmpty          = NewHTTPErrorMsg("data is empty", http.StatusBadRequest)
 	ErrDataNotFound       = NewHTTPErrorMsg("data not found", http.StatusNotFound)
+	ErrUnauthorizedError  = NewHTTPErrorMsg("unauthorized", http.StatusUnauthorized)
 )
 
 type (

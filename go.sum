@@ -1,5 +1,7 @@
 github.com/alingse/structquery v0.0.0-20220415170850-27c1c5aec3ec h1:ocWAWnlpKTzyQZLLFe5HCwmnqcQrO2F0eRSO9cCnJBY=
 github.com/alingse/structquery v0.0.0-20220415170850-27c1c5aec3ec/go.mod h1:xwRPuL2uU3mx2Qu/S6IL9x5xftr2GBmmOiNFdO0sT84=
+github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=
+github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
 github.com/gorilla/schema v1.2.0 h1:YufUaxZYCKGFuAq3c96BOhjgd5nmXiOY9NGzF247Tsc=
 github.com/gorilla/schema v1.2.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
