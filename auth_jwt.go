@@ -13,12 +13,14 @@ import (
 
 const (
 	AuthorizationKey    = "Authorization"
-	AuthorizationBEARER = "BEARER"
+	AuthorizationBearer = "Bearer"
 )
+
+var authorizationBEARER = strings.ToUpper(AuthorizationBearer)
 
 func ReadBearerToken(r *http.Request) string {
 	bearer := r.Header.Get(AuthorizationKey)
-	if len(bearer) > 7 && strings.ToUpper(bearer[0:6]) == AuthorizationBEARER {
+	if len(bearer) > 7 && strings.ToUpper(bearer[0:6]) == authorizationBEARER {
 		return bearer[7:]
 	}
 	return ""
