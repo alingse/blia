@@ -41,12 +41,12 @@ func NewJWTAuthParser[T any](secert string, expire time.Duration, oldSecerts ...
 }
 
 func (a *JWTAuthParser[T]) ParseFromRequest(r *http.Request) (T, error) {
-	return a.JwtParse(ReadBearerToken(r))
+	return a.JWTParse(ReadBearerToken(r))
 }
 
 type jwtDataClaims struct {
 	*jwt.StandardClaims
-	data string // TODO: support other decoder
+	Data string
 }
 
 func (a *JWTAuthParser[T]) JWTSign(user T) (string, error) {
@@ -62,7 +62,7 @@ func (a *JWTAuthParser[T]) JWTSign(user T) (string, error) {
 			ExpiresAt: now.Add(a.expire).Unix(),
 			IssuedAt:  now.Unix(),
 		},
-		data: string(data),
+		Data: string(data),
 	}
 	return token.SignedString([]byte(a.secert))
 }
@@ -88,7 +88,7 @@ func (a *JWTAuthParser[T]) jwtParse(token string, secert string) (T, error) {
 	}
 
 	if claims, ok := tk.Claims.(*jwtDataClaims); ok && tk.Valid {
-		err = json.Unmarshal([]byte(claims.data), &user)
+		err = json.Unmarshal([]byte(claims.Data), &user)
 		if err != nil {
 			return user, err
 		}
@@ -97,7 +97,7 @@ func (a *JWTAuthParser[T]) jwtParse(token string, secert string) (T, error) {
 	return user, ErrJwtTokenParseFailed
 }
 
-func (a *JWTAuthParser[T]) JwtParse(token string) (T, error) {
+func (a *JWTAuthParser[T]) JWTParse(token string) (T, error) {
 	var user T
 	var err error
 	for _, secert := range a.readSecerts {
