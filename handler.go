@@ -1,6 +1,7 @@
 package blia
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -26,6 +27,8 @@ func WriteError(w http.ResponseWriter, err error) {
 	httpErr := NewHTTPError(err)
 	w.WriteHeader(httpErr.ErrStatusCode())
 	_ = WriteJSON(w, errorResponse{Error: httpErr})
+
+	std.Error(context.Background(), "httpErr %+v err %+v ", httpErr, err)
 }
 
 func WriteJSON(w io.Writer, v interface{}) error {
