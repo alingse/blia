@@ -3,7 +3,6 @@ package blia
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 )
 
@@ -31,7 +30,8 @@ func WriteError(w http.ResponseWriter, err error) {
 	std.Error(context.Background(), "httpErr %+v err %+v ", httpErr, err)
 }
 
-func WriteJSON(w io.Writer, v interface{}) error {
+func WriteJSON(w http.ResponseWriter, v interface{}) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	encoder := json.NewEncoder(w)
 	encoder.SetEscapeHTML(false)
 	return encoder.Encode(v)
