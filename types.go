@@ -9,11 +9,11 @@ type OffsetLimiter interface {
 	ToOffsetLimit() OffsetLimit
 }
 
-func NewDataList[T any](data []T, off OffsetLimiter) *StandList[T] {
+func NewDataList[T any](data []T, totals int, off OffsetLimiter) *StandList[T] {
 	ol := off.ToOffsetLimit()
 	return &StandList[T]{
 		Data:   data,
-		Paging: &PagingMeta{IsEnd: len(data) < ol.Limit},
+		Paging: &PagingMeta{IsEnd: len(data) < ol.Limit, Totals: totals},
 	}
 }
 

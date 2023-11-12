@@ -13,6 +13,7 @@ var (
 	ErrDataEmpty          = NewHTTPErrorMsg("data is empty", http.StatusBadRequest)
 	ErrDataNotFound       = NewHTTPErrorMsg("data not found", http.StatusNotFound)
 	ErrUnauthorizedError  = NewHTTPErrorMsg("unauthorized", http.StatusUnauthorized)
+	ErrSimpleQueryInvalid = NewHTTPErrorMsg("query struct invalid", http.StatusInternalServerError)
 )
 
 type (

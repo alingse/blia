@@ -20,25 +20,40 @@ func Decode(r *http.Request, outPtr Validator) error {
 
 type GetDB func() *gorm.DB
 
-var queryer = structquery.NewQueryer()
+var StructQueryer = structquery.NewQueryer()
 
-func SimpleQuery[T any, U Validator, F GetDB](r *http.Request, f F) ([]T, error) {
+func SimpleQuery[T any, U any, F GetDB](r *http.Request, f F) ([]T, int64, error) {
 	var query U
-	if err := Decode(r, query); err != nil {
-		return nil, err
+	var queryPtr = &query
+	if queryPtrV, ok := (any(queryPtr)).(Validator); ok {
+		if err := Decode(r, queryPtrV); err != nil {
+			return nil, 0, err
+		}
+	} else {
+		return nil, 0, ErrSimpleQueryInvalid
 	}
-	conds, err := queryer.And(query)
+
+	conds, err := StructQueryer.And(query)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
+	var item T
 
 	ctx := r.Context()
-	db := f().WithContext(ctx)
-	var item T
+	db := f().WithContext(ctx).
+		Model(&item).
+		Where(conds)
+
 	var result []T
-	err = db.Model(&item).Where(conds).Find(&result).Error
-	if err != nil {
-		return nil, err
+	var totals int64
+	if off, ok := (any(query)).(OffsetLimiter); ok {
+		db.Count(&totals)
+		offlimit := off.ToOffsetLimit()
+		db = db.Offset(offlimit.Offset).Limit(offlimit.Limit)
 	}
-	return result, nil
+	err = db.Find(&result).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	return result, totals, nil
 }
