@@ -12,7 +12,8 @@ var (
 	ErrInvalidOffsetLimit = NewHTTPErrorMsg("invalid offset,limit or page,page_size", http.StatusBadRequest)
 	ErrDataEmpty          = NewHTTPErrorMsg("data is empty", http.StatusBadRequest)
 	ErrDataNotFound       = NewHTTPErrorMsg("data not found", http.StatusNotFound)
-	ErrUnauthorizedError  = NewHTTPErrorMsg("unauthorized", http.StatusUnauthorized)
+	ErrUnauthorized       = NewHTTPErrorMsg("unauthorized", http.StatusUnauthorized)
+	ErrForbidden          = NewHTTPErrorMsg("forbidden", http.StatusForbidden)
 	ErrSimpleQueryInvalid = NewHTTPErrorMsg("query struct invalid", http.StatusInternalServerError)
 )
 

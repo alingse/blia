@@ -35,11 +35,17 @@ func (a *Authenticator[T]) WithLoginContext() func(next http.Handler) http.Handl
 }
 
 func (a *Authenticator[T]) LoginRequired() func(next http.Handler) http.Handler {
+	return a.WithUserCheck(func(u T) bool { return true })
+}
+
+func (a *Authenticator[T]) WithUserCheck(f func(u T) bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, ok := a.GetUserFromContext(r.Context())
+			u, ok := a.GetUserFromContext(r.Context())
 			if !ok {
-				WriteError(w, ErrUnauthorizedError)
+				WriteError(w, ErrUnauthorized)
+			} else if !f(u) {
+				WriteError(w, ErrForbidden)
 			} else {
 				next.ServeHTTP(w, r)
 			}
