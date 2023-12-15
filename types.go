@@ -28,11 +28,11 @@ type OffsetLimit struct {
 }
 
 func (o *OffsetLimit) Validate() error {
-	if o.Offset < 0 || o.Limit < 0 || o.Limit > 200 {
+	if o.Offset < 0 || o.Limit < 0 || o.Limit > maxPageLimit {
 		return ErrInvalidOffsetLimit
 	}
 	if o.Limit == 0 {
-		o.Limit = 20
+		o.Limit = defaultPageLimit
 	}
 	return nil
 }
