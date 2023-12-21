@@ -106,7 +106,6 @@ func SimpleFetch[T Entity](ctx context.Context, f GetDB, query ModelQuery) ([]T,
 
 	off := query.ToOffsetLimit()
 	err = db.Find(&items).
-		Order("id desc").
 		Offset(off.Offset).
 		Limit(off.Limit).
 		Error
@@ -115,4 +114,10 @@ func SimpleFetch[T Entity](ctx context.Context, f GetDB, query ModelQuery) ([]T,
 		return nil, 0, err
 	}
 	return items, total, nil
+}
+
+type OrderByID struct{}
+
+func (OrderByID) OrderBy() []clause.OrderByColumn {
+	return []clause.OrderByColumn{{Column: clause.Column{Name: "id"}, Desc: true}}
 }
