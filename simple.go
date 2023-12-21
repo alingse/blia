@@ -1,10 +1,13 @@
 package blia
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/alingse/structquery"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func Decode(r *http.Request, outPtr Validator) error {
@@ -56,4 +59,46 @@ func SimpleQuery[T any, U any, F GetDB](r *http.Request, f F) ([]T, int64, error
 		return nil, 0, err
 	}
 	return result, totals, nil
+}
+
+type ModelQuery interface {
+	Clauses() clause.Expression
+	OrderBy() []clause.OrderByColumn
+	OffsetLimiter
+}
+
+type Entity interface {
+	TableName() string
+}
+
+func SimpleFetch[T Entity](ctx context.Context, f GetDB, query ModelQuery) ([]T, int64, error) {
+	var db = f().WithContext(ctx)
+	var items []T
+	var total int64
+	var err error
+	var t T
+
+	db = db.Model(&t)
+	if expr := query.Clauses(); expr != nil {
+		db = db.Where(expr)
+	}
+	db.Count(&total)
+
+	if orders := query.OrderBy(); orders != nil {
+		for _, order := range orders {
+			db = db.Order(order)
+		}
+	}
+
+	off := query.ToOffsetLimit()
+	err = db.Find(&items).
+		Order("id desc").
+		Offset(off.Offset).
+		Limit(off.Limit).
+		Error
+	if err != nil {
+		logrus.Error(query, err)
+		return nil, 0, err
+	}
+	return items, total, nil
 }
