@@ -61,14 +61,28 @@ func SimpleQuery[T any, U any, F GetDB](r *http.Request, f F) ([]T, int64, error
 	return result, totals, nil
 }
 
-type ModelQuery interface {
-	Clauses() clause.Expression
+type OrderBy interface {
 	OrderBy() []clause.OrderByColumn
+}
+
+type Clauses interface {
+	Clauses() clause.Expression
+}
+
+type ModelQuery interface {
+	Clauses
+	OrderBy
 	OffsetLimiter
 }
 
 type Entity interface {
 	TableName() string
+}
+
+type NoOrder struct{}
+
+func (NoOrder) OrderBy() []clause.OrderByColumn {
+	return nil
 }
 
 func SimpleFetch[T Entity](ctx context.Context, f GetDB, query ModelQuery) ([]T, int64, error) {
