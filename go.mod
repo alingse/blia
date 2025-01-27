@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/alingse/structquery v0.0.0-20220415170850-27c1c5aec3ec
+	github.com/deckarep/golang-set/v2 v2.7.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/schema v1.2.0
 	github.com/sirupsen/logrus v1.9.3
