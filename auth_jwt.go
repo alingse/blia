@@ -1,6 +1,7 @@
 package blia
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -109,4 +110,16 @@ func (a *JWTAuthParser[T]) JWTParse(token string) (T, error) {
 		}
 	}
 	return user, err
+}
+
+func (a *JWTAuthParser[T]) TokenAuth(afterParse func(ctx context.Context, user T, err error) context.Context) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := ReadBearerToken(r)
+			ctx := r.Context()
+			user, err := a.JWTParse(token)
+			newCtx := afterParse(ctx, user, err)
+			next.ServeHTTP(w, r.WithContext(newCtx))
+		})
+	}
 }
