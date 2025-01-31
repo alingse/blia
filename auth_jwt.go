@@ -112,14 +112,27 @@ func (a *JWTAuthParser[T]) JWTParse(token string) (T, error) {
 	return user, err
 }
 
-func (a *JWTAuthParser[T]) OnAuth(f func(ctx context.Context, user T, err error) context.Context) func(next http.Handler) http.Handler {
+func (a *JWTAuthParser[T]) OnAuth(setUserCtxFn func(ctx context.Context, user T, err error) context.Context) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := ReadBearerToken(r)
 			ctx := r.Context()
 			user, err := a.JWTParse(token)
-			newCtx := f(ctx, user, err)
+			newCtx := setUserCtxFn(ctx, user, err)
 			next.ServeHTTP(w, r.WithContext(newCtx))
+		})
+	}
+}
+
+func (a *JWTAuthParser[T]) LoginRequired(readUserCtxFn func(ctx context.Context) (user T, err error), onErrFn func(next http.Handler, err error)) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, err := readUserCtxFn(r.Context())
+			if err != nil {
+				onErrFn(next, err)
+				return
+			}
+			next.ServeHTTP(w, r)
 		})
 	}
 }
