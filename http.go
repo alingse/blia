@@ -4,13 +4,22 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+
+	"github.com/samber/lo"
 )
+
+var NeedBodyContentTypes = []string{
+	"application/json",
+}
 
 func HTTPFullLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := &bytes.Buffer{}
-		defer r.Body.Close()
-		r.Body = io.NopCloser(io.TeeReader(r.Body, body))
+		if lo.Contains(NeedBodyContentTypes, r.Header.Get("Content-Type")) {
+			defer r.Body.Close()
+			r.Body = io.NopCloser(io.TeeReader(r.Body, body))
+		}
+
 		next.ServeHTTP(w, r)
 		// TODO tee on w
 		log := map[string]any{
