@@ -14,12 +14,26 @@ type Model struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
+var _ WithModel = new(Model)
+
 func (m Model) GetModelID() uint {
 	return m.ID
 }
 
 func (m Model) GetModel() Model {
 	return m
+}
+
+type NoDeleteAtModel struct {
+	ID        uint      `json:"id"         gorm:"primarykey"`
+	CreatedAt time.Time `json:"created_at" gorm:"<-:create"`
+	UpdatedAt time.Time `json:"updated_at" gorm:""`
+}
+
+var _ WithModel = new(NoDeleteAtModel)
+
+func (m NoDeleteAtModel) GetModelID() uint {
+	return m.ID
 }
 
 type WithModel interface {
