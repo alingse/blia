@@ -24,15 +24,15 @@ func (m Model) GetModel() Model {
 	return m
 }
 
-type NoDeleteAtModel struct {
+type BasicModel struct {
 	ID        uint      `json:"id"         gorm:"primarykey"`
 	CreatedAt time.Time `json:"created_at" gorm:"<-:create"`
 	UpdatedAt time.Time `json:"updated_at" gorm:""`
 }
 
-var _ WithModel = new(NoDeleteAtModel)
+var _ WithModel = new(BasicModel)
 
-func (m NoDeleteAtModel) GetModelID() uint {
+func (m BasicModel) GetModelID() uint {
 	return m.ID
 }
 
